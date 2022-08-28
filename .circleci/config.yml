@@ -1,0 +1,44 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7
+  
+jobs:
+  run-tests:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Lint
+          command: npm run lint
+      - add_ssh_keys:
+          fingerprints:
+            - "cd:4a:ac:11:17:45:e7:cd:bc:a8:e1:c2:e7:77:4b:2c"
+  deploy:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "cd:4a:ac:11:17:45:e7:cd:bc:a8:e1:c2:e7:77:4b:2c"
+      - run:
+          name: Deployment
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              ssh -o StrictHostKeyChecking=no ctr@20.117.177.231 'bash -s' < ./deploy-production.sh
+            fi
+workflows:
+  ci_cd_pipeline:
+    jobs:
+      - run-tests:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - main
+          requires: 
+            - run-tests
