@@ -1,44 +1,39 @@
 version: 2.1
-
-orbs:
-  node: circleci/node@4.7
-  
 jobs:
-  run-tests:
+  build:
+    working_directory: ~/repo
     docker:
-      - image: cimg/node:16.10
+      - image: cimg/node:16.13.2
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
       - run:
-          name: Lint
-          command: npm run lint
-      - add_ssh_keys:
-          fingerprints:
-            - "cd:4a:ac:11:17:45:e7:cd:bc:a8:e1:c2:e7:77:4b:2c"
-  deploy:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "cd:4a:ac:11:17:45:e7:cd:bc:a8:e1:c2:e7:77:4b:2c"
+          name: Update NPM
+          command: "sudo npm install -g npm"
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
-          name: Deployment
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              ssh -o StrictHostKeyChecking=no ctr@20.117.177.231 'bash -s' < ./deploy-production.sh
-            fi
+          name: Install Dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Build React App
+          command: npm run build
+      - save_cache:
+          key: app-build-cache-{{ .Branch }}
+          paths:
+            - ./build
+      - run:
+          name: Deploy to Netlify
+          command: ./node_modules/.bin/netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --prod --dir=build
 workflows:
-  ci_cd_pipeline:
+  version: 2
+  build-deploy:
     jobs:
-      - run-tests:
-      - deploy:
+      - build:
           filters:
             branches:
               only:
                 - main
-          requires: 
-            - run-tests
