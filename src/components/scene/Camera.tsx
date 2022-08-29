@@ -10,8 +10,8 @@ export const Camera = () => {
 
         controls.minDistance = 3
         controls.maxDistance = 10
-        controls.maxPolarAngle = 1.4
-        controls.minPolarAngle = 0.5
+        //controls.maxPolarAngle = 1.4
+        //controls.minPolarAngle = 0.5
         return () => {
             controls.dispose()
         }

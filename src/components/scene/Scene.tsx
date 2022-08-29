@@ -2,162 +2,163 @@ import { Canvas, ThreeEvent, useFrame, MeshProps, useThree, GroupProps } from '@
 import { useEffect, useRef, useState } from 'react'
 import * as three from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { FlyControls, useGLTF, OrthographicCamera } from '@react-three/drei'
+import {
+    FlyControls,
+    useGLTF,
+    OrthographicCamera,
+    PerspectiveCamera,
+    useHelper,
+} from '@react-three/drei'
 import { Camera } from './Camera'
 import useSpline from '@splinetool/r3f-spline'
+import { PointLight } from 'three'
+import { Lights } from './Lights'
 
 export const Scene = () => {
     return (
-        <Canvas camera={{ fov: 75, near: 0.1, far: 25, position: [7, 5, 1.5] }}>
+        <Canvas camera={{ fov: 75, near: 0.1, far: 1000, position: [7, 7, 7] }}>
             <Camera />
-            <color attach="background" args={['#dasd2a']} />
-            <ambientLight />
-            <gridHelper />
-            <pointLight position={[10, 10, 10]} />
-            <Box position={[0, 1, 0]} />
-            <Circle position={[-2, 3, 1]} />
-            <Car />
-            <Face />
+            <Lights />
+            <Room />
         </Canvas>
     )
 }
 
-function Circle(props: MeshProps) {
-    // This reference will give us direct access to the mesh
-    const mesh = useRef(three.Mesh as any)
-    // Set up state for the hovered and active state
-    const [hovered, setHover] = useState(false)
-    const [active, setActive] = useState(false)
-    // Rotate mesh every frame, this is outside of React without overhead
-    useFrame(() => {
-        mesh.current.rotation.x += 0.01
-    })
-
-    return (
-        <mesh
-            {...props}
-            ref={mesh}
-            scale={active ? 1.5 : 1}
-            onClick={(event: ThreeEvent<MouseEvent>) => setActive(!active)}
-            onPointerOver={(event: ThreeEvent<MouseEvent>) => setHover(true)}
-            onPointerOut={(event: ThreeEvent<MouseEvent>) => setHover(false)}
-        >
-            <sphereGeometry />
-            <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-        </mesh>
-    )
-}
-
-function Box(props: MeshProps) {
-    // This reference will give us direct access to the mesh
-    const mesh = useRef(three.Mesh as any)
-    // Set up state for the hovered and active state
-    const [hovered, setHover] = useState(false)
-    const [active, setActive] = useState(false)
-    // Rotate mesh every frame, this is outside of React without overhead
-    useFrame(() => {
-        // mesh.current.rotation.x += 0.01
-    })
-
-    return (
-        <mesh
-            {...props}
-            ref={mesh}
-            scale={active ? 1.5 : 1}
-            onClick={(event: ThreeEvent<MouseEvent>) => setActive(!active)}
-            onPointerOver={(event: ThreeEvent<MouseEvent>) => setHover(true)}
-            onPointerOut={(event: ThreeEvent<MouseEvent>) => setHover(false)}
-        >
-            <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-        </mesh>
-    )
-}
-
-function Car() {
-    const gltf = useGLTF('/models/car/scene.gltf')
-    return (
-        <group position={[13, 11, -5]}>
-            <primitive object={gltf.scene} />
-        </group>
-    )
-}
-
-function Face(props: GroupProps) {
+const Room = (props: GroupProps) => {
     const { nodes, materials } = useSpline(
-        'https://prod.spline.design/Wod4puHP1DHHfiBe/scene.splinecode'
+        'https://prod.spline.design/OEtNeVGd1dIudaoJ/scene.splinecode'
     )
     return (
         <>
-            <group {...props} dispose={null} position={[2, 2, 2]} scale={0.01}>
+            <color attach="background" args={['#e3eddb']} />
+            <group {...props} dispose={null} scale={0.01}>
+                <mesh
+                    name="Cube 9"
+                    geometry={nodes['Cube 9'].geometry}
+                    material={materials['Cube 9 Material']}
+                    castShadow
+                    receiveShadow
+                    position={[-6.62, 352.5, 265.34]}
+                    rotation={[Math.PI / 2, -Math.PI / 2, 0]}
+                    scale={[1, 1, 0.26]}
+                />
+                <group name="Group" position={[150.06, 47.87, 146.31]}>
+                    <mesh
+                        name="Cube 12"
+                        geometry={nodes['Cube 12'].geometry}
+                        material={materials['Chair wood']}
+                        castShadow
+                        receiveShadow
+                        position={[-25.92, -4.3, -27.42]}
+                        rotation={[1.66, -0.09, 0]}
+                        scale={[-1, 1, 9.37]}
+                    />
+                    <mesh
+                        name="Cube 121"
+                        geometry={nodes['Cube 121'].geometry}
+                        material={materials['Chair wood']}
+                        castShadow
+                        receiveShadow
+                        position={[26.57, -4.3, -27.42]}
+                        rotation={[1.66, 0.09, -0.01]}
+                        scale={[-1, 1, 9.37]}
+                    />
+                    <mesh
+                        name="Cube 11"
+                        geometry={nodes['Cube 11'].geometry}
+                        material={materials['Chair wood']}
+                        castShadow
+                        receiveShadow
+                        position={[-25.92, -4.3, 25.19]}
+                        rotation={[1.48, -0.09, 0]}
+                        scale={[-1, 1, 9.37]}
+                    />
+                    <mesh
+                        name="Cube 10"
+                        geometry={nodes['Cube 10'].geometry}
+                        material={materials['Chair wood']}
+                        castShadow
+                        receiveShadow
+                        position={[26.57, -4.3, 25.19]}
+                        rotation={[1.48, 0.09, 0]}
+                        scale={[-1, 1, 9.37]}
+                    />
+                    <mesh
+                        name="Cube 91"
+                        geometry={nodes['Cube 91'].geometry}
+                        material={materials['Chair wood']}
+                        castShadow
+                        receiveShadow
+                        position={[0, 41.53, 0]}
+                        rotation={[-Math.PI / 2, 0, -Math.PI]}
+                        scale={[1, 1, 0.14]}
+                    />
+                </group>
+                <mesh
+                    name="Cube 8"
+                    geometry={nodes['Cube 8'].geometry}
+                    material={materials['Cube 8 Material']}
+                    castShadow
+                    receiveShadow
+                    position={[8.63, 96.78, -14.15]}
+                    rotation={[-Math.PI / 2, 0, -Math.PI]}
+                    scale={[1, 1, 1.77]}
+                />
+                <mesh
+                    name="Cube 81"
+                    geometry={nodes['Cube 81'].geometry}
+                    material={materials['Cube 81 Material']}
+                    castShadow
+                    receiveShadow
+                    position={[8.63, 96.78, -319.93]}
+                    rotation={[-Math.PI / 2, 0, -Math.PI]}
+                    scale={[1, 1, 1.77]}
+                />
+                <mesh
+                    name="Cube 7"
+                    geometry={nodes['Cube 7'].geometry}
+                    material={materials['Cube 7 Material']}
+                    castShadow
+                    receiveShadow
+                    position={[107.5, 96.78, -14.15]}
+                    rotation={[-Math.PI / 2, 0, -Math.PI]}
+                    scale={[1, 1, 1.77]}
+                />
                 <mesh
                     name="Cube 6"
                     geometry={nodes['Cube 6'].geometry}
-                    material={materials['Hair color']}
+                    material={materials['Cube 6 Material']}
                     castShadow
                     receiveShadow
-                    position={[17.45, -1.29, -3.75]}
-                    rotation={[0, Math.PI / 2, 0]}
+                    position={[107.5, 96.78, -319.93]}
+                    rotation={[-Math.PI / 2, 0, -Math.PI]}
+                    scale={[1, 1, 1.77]}
                 />
                 <mesh
                     name="Cube 5"
                     geometry={nodes['Cube 5'].geometry}
-                    material={materials['Hair color']}
+                    material={materials['Cube 5 Material']}
                     castShadow
                     receiveShadow
-                    position={[-52.9, 13.02, -6.54]}
-                    rotation={[2.98, -1.52, 2.98]}
+                    position={[58.26, 200, -167.35]}
+                    rotation={[Math.PI / 2, Math.PI / 2, 0]}
                 />
                 <mesh
                     name="Cube 4"
                     geometry={nodes['Cube 4'].geometry}
-                    material={materials['Darker skin']}
+                    material={materials['Cube 4 Material']}
                     castShadow
                     receiveShadow
-                    position={[69.87, -11.01, 19.29]}
+                    position={[530.77, 320.41, -242.04]}
                 />
                 <mesh
                     name="Cube 3"
                     geometry={nodes['Cube 3'].geometry}
-                    material={materials['Darker skin']}
+                    material={materials['Cube 3 Material']}
                     castShadow
                     receiveShadow
-                    position={[-70.13, -14.01, 19.29]}
-                />
-                <mesh
-                    name="Torus 3"
-                    geometry={nodes['Torus 3'].geometry}
-                    material={materials['Hair color']}
-                    castShadow
-                    receiveShadow
-                    position={[-26.13, -1.01, 62.92]}
-                    rotation={[0, 0, -0.37]}
-                />
-                <mesh
-                    name="Torus 2"
-                    geometry={nodes['Torus 2'].geometry}
-                    material={materials['Hair color']}
-                    castShadow
-                    receiveShadow
-                    position={[24.31, -0.88, 62.92]}
-                    rotation={[0, 0, -0.54]}
-                />
-                <mesh
-                    name="Torus"
-                    geometry={nodes.Torus.geometry}
-                    material={materials.Lips}
-                    castShadow
-                    receiveShadow
-                    position={[0.79, -43.95, 57.62]}
-                    rotation={[0.08, 0.05, 2.11]}
-                />
-                <mesh
-                    name="Nose"
-                    geometry={nodes.Nose.geometry}
-                    material={materials['Face skin']}
-                    castShadow
-                    receiveShadow
-                    position={[0.83, -29.27, 61.32]}
+                    position={[0, 250, 0]}
+                    rotation={[Math.PI, 0, Math.PI / 2]}
                 />
                 <mesh
                     name="Cube 2"
@@ -165,27 +166,19 @@ function Face(props: GroupProps) {
                     material={materials['Cube 2 Material']}
                     castShadow
                     receiveShadow
-                    position={[23.83, -7.27, 61.32]}
-                />
-                <mesh
-                    name="Cube 21"
-                    geometry={nodes['Cube 21'].geometry}
-                    material={materials['Cube 21 Material']}
-                    castShadow
-                    receiveShadow
-                    position={[-26.17, -7.27, 61.32]}
+                    position={[0, 250, 0]}
+                    rotation={[Math.PI / 2, -Math.PI / 2, 0]}
                 />
                 <mesh
                     name="Cube"
                     geometry={nodes.Cube.geometry}
-                    material={materials['Face skin']}
+                    material={materials['Cube Material']}
                     castShadow
                     receiveShadow
+                    position={[3, 0, -1]}
+                    rotation={[Math.PI / 2, 0, 0]}
                 />
             </group>
         </>
     )
 }
-
-useGLTF.preload('/models/face/ansigt.gltf')
-useGLTF.preload('/models/car/scene.gltf')
